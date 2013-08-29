@@ -1,0 +1,34 @@
+Summary: NethServer Owncloud configuration
+Name: nethserver-owncloud
+Version: @@VERSION@@
+Release: @@RELEASE@@
+License: GPL
+Source: %{name}-%{version}.tar.gz
+BuildArch: noarch
+URL: https://dev.nethesis.it/projects/%{name}
+
+BuildRequires: nethserver-devtools
+
+AutoReq: no
+Requires:
+Requires: owncloud,php-ldap
+
+%description
+NethServer Owncloud configuration
+
+%prep
+%setup
+
+%post
+
+%preun
+
+%build
+perl createlinks
+
+%install
+
+%files -f e-smith-%{version}-filelist
+%defattr(-,root,root)
+
+%changelog
