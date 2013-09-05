@@ -23,7 +23,7 @@ use esmith::Build::CreateLinks  qw(:all);
 
 
 #--------------------------------------------------
-# actions for nethserver-faxweb2-update event
+# actions for nethserver-owncloud-update event
 #--------------------------------------------------
 
 my $event = "nethserver-owncloud-update";
@@ -31,11 +31,5 @@ my $event = "nethserver-owncloud-update";
 event_actions($event, 'initialize-default-databases' => '00');
 event_actions($event, 'nethserver-owncloud-conf' => '20');
 event_services($event, 'httpd' => 'reload');
-safe_symlink("/etc/e-smith/templates-default/template-begin-php",
-    "root/etc/e-smith/templates/var/www/html/faxweb/conf.inc.php/template-begin");
-safe_symlink("/etc/e-smith/templates-default/template-end-php",
-    "root/etc/e-smith/templates/var/www/html/faxweb/conf.inc.php/template-end");
-templates2events("/var/www/html/faxweb/conf.inc.php",  $event);
-
 
 exit;

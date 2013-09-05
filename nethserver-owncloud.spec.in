@@ -10,8 +10,8 @@ URL: https://dev.nethesis.it/projects/%{name}
 BuildRequires: nethserver-devtools
 
 AutoReq: no
-Requires:
-Requires: owncloud,php-ldap,nethserver-mysql
+Requires: owncloud,php-ldap
+Requires: nethserver-httpd,nethserver-mysql
 
 %description
 NethServer Owncloud configuration
