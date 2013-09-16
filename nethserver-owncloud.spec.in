@@ -32,6 +32,8 @@ rm -rf $RPM_BUILD_ROOT
 (cd root   ; find . -depth -print | cpio -dump $RPM_BUILD_ROOT)
 
 %{genfilelist} \
+	--dir /var/www/owncloud/config 'attr(775, apache, apache)' \
+	--dir /var/www/owncloud/config/autoconfig.php 'attr(775, apache, apache)' \
     $RPM_BUILD_ROOT > e-smith-%{version}-filelist
 echo "%doc COPYING"          >> e-smith-%{version}-filelist
 
