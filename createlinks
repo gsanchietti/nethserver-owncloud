@@ -31,5 +31,6 @@ my $event = "nethserver-owncloud-update";
 event_actions($event, 'initialize-default-databases' => '00');
 event_actions($event, 'nethserver-owncloud-conf' => '20');
 event_services($event, 'httpd' => 'reload');
+templates2events("/etc/httpd/conf.d/owncloud.conf",  $event);
 
 exit;

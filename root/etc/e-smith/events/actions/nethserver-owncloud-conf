@@ -20,7 +20,6 @@
 #
 
 use strict;
-use NethServer::Directory;
 package esmith;
 
 use Errno;
