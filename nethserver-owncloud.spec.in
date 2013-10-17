@@ -11,7 +11,7 @@ BuildRequires: nethserver-devtools
 
 AutoReq: no
 Requires: owncloud,php-ldap
-Requires: nethserver-httpd,nethserver-mysql
+Requires: nethserver-httpd,nethserver-mysql,nethserver-directory 
 
 %description
 NethServer Owncloud configuration
