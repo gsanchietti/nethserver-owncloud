@@ -24,6 +24,9 @@ package esmith;
 
 use Errno;
 use esmith::util;
+use NethServer::Directory;
+
+my $exitCode = 0; 
 
 # sql symlink
 symlink "/var/www/html/owncloud/sql/owncloud.sql",
@@ -36,4 +39,4 @@ my $ldap = NethServer::Directory->new();
 # Register owncloud service account in LDAP:
 $ldap->configServiceAccount('owncloud', NethServer::Directory::FIELDS_READ) || $exitCode++;
 
-exit (0);
+exit ($exitCode>0?1:0); 
