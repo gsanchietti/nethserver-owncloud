@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 #
 # Copyright (C) 2012 Nethesis S.r.l.
 # http://www.nethesis.it - support@nethesis.it
@@ -19,19 +19,28 @@
 # along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-use esmith::Build::CreateLinks  qw(:all);
+use strict;
+package esmith;
 
+use Errno;
+use esmith::util;
+use NethServer::Directory;
 
-#--------------------------------------------------
-# actions for nethserver-owncloud-update event
-#--------------------------------------------------
+my $exitCode = 0; 
 
-my $event = "nethserver-owncloud-update";
+my $ldap = NethServer::Directory->new();
 
-event_actions($event, 'initialize-default-databases' => '00');
-event_actions($event, 'nethserver-owncloud-conf' => '20');
-event_services($event, 'httpd' => 'reload');
-# HACK: avoid /etc/ntp.conf overwite by owncloud package
-templates2events("/etc/ntp.conf",  $event);
+# Register owncloud service account in LDAP:
+$ldap->configServiceAccount('owncloud', NethServer::Directory::FIELDS_READ) || $exitCode++;
 
-exit;
+print "ownCloud LDAP password is: ";
+
+open(FILE, "/etc/openldap/.owncloud.pw") || warn "Can't open file\n";
+while (<FILE>) {
+     print;
+}
+close(FILE);
+
+print "\n";
+
+exit ($exitCode>0?1:0); 

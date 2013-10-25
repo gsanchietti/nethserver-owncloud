@@ -11,7 +11,7 @@ BuildRequires: nethserver-devtools
 
 AutoReq: no
 Requires: owncloud,php-ldap
-Requires: nethserver-httpd,nethserver-mysql,nethserver-directory 
+Requires: nethserver-httpd, nethserver-mysql
 
 %description
 NethServer Owncloud configuration
@@ -33,7 +33,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %{genfilelist} \
 	--dir /var/www/html/owncloud/config 'attr(775, apache, apache)' \
-	--dir /var/www/html/owncloud/config/autoconfig.php 'attr(775, apache, apache)' \
     $RPM_BUILD_ROOT > e-smith-%{version}-filelist
 echo "%doc COPYING"          >> e-smith-%{version}-filelist
 

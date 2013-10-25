@@ -24,9 +24,6 @@ package esmith;
 
 use Errno;
 use esmith::util;
-use NethServer::Directory;
-
-my $exitCode = 0; 
 
 # sql symlink
 symlink "/var/www/html/owncloud/sql/owncloud.sql",
@@ -34,9 +31,22 @@ symlink "/var/www/html/owncloud/sql/owncloud.sql",
 
 system ("/sbin/service mysql.init start"); 
 
-my $ldap = NethServer::Directory->new();
+my $autoconf = '
+<?php
+$AUTOCONFIG = array(
+  "dbtype"        => "mysql",
+  "dbname"        => "owncloud",
+  "dbuser"        => "ownuser",
+  "dbpass"        => "ownpass",
+  "dbhost"        => "localhost",
+  "dbtableprefix" => "",
+  "adminlogin"    => "admin",
+  "adminpass"     => "Nethesis,1234",
+  "directory"     => "/var/www/html/owncloud/data",
+  "default_language" => "it",
+);';
 
-# Register owncloud service account in LDAP:
-$ldap->configServiceAccount('owncloud', NethServer::Directory::FIELDS_READ) || $exitCode++;
+open (FILE, '>/var/www/html/owncloud/config/autoconfig.php');
+print FILE $autoconf;
+close FILE;
 
-exit ($exitCode>0?1:0); 
