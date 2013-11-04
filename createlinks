@@ -30,6 +30,8 @@ my $event = "nethserver-owncloud-update";
 
 event_actions($event, 'initialize-default-databases' => '00');
 event_actions($event, 'nethserver-owncloud-conf' => '20');
+#template for force SSL in vhost configuration
+templates2events("/etc/httpd/conf/httpd.conf",  $event);
 event_services($event, 'httpd' => 'reload');
 # HACK: avoid /etc/ntp.conf overwite by owncloud package
 templates2events("/etc/ntp.conf",  $event);

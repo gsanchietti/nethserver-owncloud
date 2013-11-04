@@ -1,0 +1,18 @@
+#
+# 40owncloud
+#
+{
+        my      $targetVirtualHost = join('.', $SystemName, $DomainName);
+        if ( $ServerName ne $targetVirtualHost ) {
+               return "# -- DISABLED (for virtual host $targetVirtualHost only)\n";
+        }
+
+$ownConf = <<OWNCLOUDIRECT;
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule ^/owncloud(/.*)?\$ https://$targetVirtualHost/owncloud\$1 [R,L]
+OWNCLOUDIRECT
+
+$OUT = $ownConf;
+
+}
