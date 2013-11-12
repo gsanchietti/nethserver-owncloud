@@ -21,19 +21,22 @@
 
 use esmith::Build::CreateLinks  qw(:all);
 
+#
+# Event nethserver-owncloud-update 
+#
+event_actions("nethserver-owncloud-update", qw(
+  initialize-default-databases 00
+  nethserver-owncloud-conf 20
+));
 
-#--------------------------------------------------
-# actions for nethserver-owncloud-update event
-#--------------------------------------------------
+# Avoid /etc/ntp.conf overwite by owncloud package
+event_templates("nethserver-owncloud-update", qw(
+  /etc/httpd/conf/httpd.conf
+  /etc/ntp.conf
+));
 
-my $event = "nethserver-owncloud-update";
+event_services("nethserver-owncloud-update", qw(
+  httpd reload
+));
 
-event_actions($event, 'initialize-default-databases' => '00');
-event_actions($event, 'nethserver-owncloud-conf' => '20');
-#template for force SSL in vhost configuration
-templates2events("/etc/httpd/conf/httpd.conf",  $event);
-event_services($event, 'httpd' => 'reload');
-# HACK: avoid /etc/ntp.conf overwite by owncloud package
-templates2events("/etc/ntp.conf",  $event);
 
-exit;
