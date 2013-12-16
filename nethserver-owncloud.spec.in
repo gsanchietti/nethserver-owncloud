@@ -40,6 +40,9 @@ echo "%doc COPYING"          >> e-smith-%{version}-filelist
 %defattr(-,root,root)
 
 %changelog
+* Mon Dec 16 2013 Davide Principi <davide.principi@nethesis.it> - 1.0.1-1.ns6
+- /owncloud path not found - Bug #2342 [NethServer]
+
 * Mon Nov 11 2013 Davide Principi <davide.principi@nethesis.it> - 1.0.0-1.ns6
 - First NethServer/ownCloud integration release - Feature #2037 [NethServer]
 
