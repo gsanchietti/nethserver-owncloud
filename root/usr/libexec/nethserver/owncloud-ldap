@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# Copyright (C) 2012 Nethesis S.r.l.
+# Copyright (C) 2014 Nethesis S.r.l.
 # http://www.nethesis.it - support@nethesis.it
 # 
 # This script is part of NethServer.
@@ -20,27 +20,13 @@
 #
 
 use strict;
-package esmith;
 
-use Errno;
-use esmith::util;
 use NethServer::Directory;
-
-my $exitCode = 0; 
-
-my $ldap = NethServer::Directory->new();
+use NethServer::Password;
 
 # Register owncloud service account in LDAP:
-$ldap->configServiceAccount('owncloud', NethServer::Directory::FIELDS_READ) || $exitCode++;
+NethServer::Directory->new()->configServiceAccount('owncloud', NethServer::Directory::FIELDS_READ) || die("Failed to register owncloud service account");
 
-print "ownCloud LDAP password is: ";
+printf("ownCloud LDAP password is: %s\n", NethServer::Password->new('owncloud')->getAscii());
 
-open(FILE, "/etc/openldap/.owncloud.pw") || warn "Can't open file\n";
-while (<FILE>) {
-     print;
-}
-close(FILE);
 
-print "\n";
-
-exit ($exitCode>0?1:0); 
