@@ -40,6 +40,9 @@ echo "%doc COPYING"          >> e-smith-%{version}-filelist
 %defattr(-,root,root)
 
 %changelog
+* Mon Mar 10 2014 Davide Principi <davide.principi@nethesis.it> - 1.0.2-1.ns6
+- Can't find ownCloud LDAP secret password - Bug #2670 [NethServer]
+
 * Mon Dec 16 2013 Davide Principi <davide.principi@nethesis.it> - 1.0.1-1.ns6
 - /owncloud path not found - Bug #2342 [NethServer]
 
