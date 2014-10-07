@@ -1,0 +1,23 @@
+#!/bin/bash
+url=`config get SystemName`.`config get DomainName`
+curl -s -k https://$url/owncloud/ > /dev/null
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ app:enable user_ldap
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:create-empty-config
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapAgentPassword `cat /var/lib/nethserver/secrets/owncloud`
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapBackupPort "389"
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapBase "dc=directory,dc=nh"
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapBaseGroups "dc=directory,dc=nh"
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapBaseUsers "dc=directory,dc=nh"
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapConfigurationActive "1"
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapUserDisplayName "cn"
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapAgentName "cn=owncloud,dc=directory,dc=nh"
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapEmailAttribute "mail"
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapExpertUsernameAttr "uid"
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapGroupDisplayName "cn"
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapGroupFilter "(&(objectClass=posixGroup)(memberUid=*))"
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapGroupMemberAssocAttr "memberUid"
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapHost "localhost:389"
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapLoginFilter "uid=%uid"
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapPort "389"
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapTLS "1"
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapUserFilter "(&(objectClass=person)(givenName=*))"
