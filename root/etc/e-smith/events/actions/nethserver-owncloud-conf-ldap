@@ -1,6 +1,7 @@
 #!/bin/bash
 url=`config get SystemName`.`config get DomainName`
 curl -s -k https://$url/owncloud/ > /dev/null
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ upgrade
 php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ app:enable user_ldap
 php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:create-empty-config
 php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapAgentPassword `cat /var/lib/nethserver/secrets/owncloud`
