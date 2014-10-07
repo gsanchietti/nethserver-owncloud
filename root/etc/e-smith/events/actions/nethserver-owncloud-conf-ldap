@@ -12,7 +12,7 @@ php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ld
 php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapConfigurationActive "1"
 php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapUserDisplayName "cn"
 php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapAgentName "cn=owncloud,dc=directory,dc=nh"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapEmailAttribute "mail"
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapEmailAttribute "email"
 php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapExpertUsernameAttr "uid"
 php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapGroupDisplayName "cn"
 php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapGroupFilter "(&(objectClass=posixGroup)(memberUid=*))"
