@@ -30,11 +30,9 @@ event_actions("nethserver-owncloud-update", qw(
   nethserver-owncloud-conf-ldap 95
 ));
 
-# Avoid /etc/ntp.conf overwite by owncloud package
 event_templates("nethserver-owncloud-update", qw(
   /etc/httpd/conf/httpd.conf
   /etc/httpd/conf.d/owncloud.conf
-  /etc/ntp.conf
   /var/www/html/owncloud/apps/user_ldap/appinfo/register_command.php
 ));
 
