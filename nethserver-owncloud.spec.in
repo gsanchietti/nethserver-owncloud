@@ -10,7 +10,8 @@ URL: %{url_prefix}/%{name}
 BuildRequires: nethserver-devtools
 
 AutoReq: no
-Requires: owncloud,php-ldap
+Requires: owncloud >= 7.0.2
+Requires: php-ldap, nethserver-directory
 Requires: nethserver-httpd, nethserver-mysql
 
 %description
@@ -33,6 +34,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %{genfilelist} \
 	--dir /var/www/html/owncloud/config 'attr(775, apache, apache)' \
+	--dir /var/www/html/owncloud 'attr(750, root, apache)' \
+	--dir /var/www/html/owncloud/apps 'attr(770, apache, apache)' \
+	--dir /var/www/html/owncloud/apps/user_ldap 'attr(750, root, apache)' \
+	--dir /var/www/html/owncloud/apps/user_ldap/command 'attr(750, root, apache)' \
     $RPM_BUILD_ROOT > e-smith-%{version}-filelist
 echo "%doc COPYING"          >> e-smith-%{version}-filelist
 

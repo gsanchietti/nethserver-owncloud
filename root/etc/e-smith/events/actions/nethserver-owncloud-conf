@@ -24,6 +24,10 @@ package esmith;
 
 use Errno;
 use esmith::util;
+use esmith::ConfigDB;
+use esmith::NetworksDB;
+use NethServer::Directory;
+use NethServer::Password;
 
 # sql symlink
 symlink "/var/www/html/owncloud/sql/owncloud.sql",
@@ -31,9 +35,16 @@ symlink "/var/www/html/owncloud/sql/owncloud.sql",
 
 system ("/sbin/service mysql.init start"); 
 
+my $db = esmith::ConfigDB->open_ro();
+my $domain = $db->get('DomainName')->value;
+my $system = $db->get('SystemName')->value;
+my $url = $system.'.'.$domain;
+my $ip = esmith::NetworksDB->open_ro()->green->prop("ipaddr");
+
 my $autoconf = '
 <?php
 $AUTOCONFIG = array(
+  "trusted_domains" => array("'.$ip.'", "'.$url.'"),
   "dbtype"        => "mysql",
   "dbname"        => "owncloud",
   "dbuser"        => "ownuser",
@@ -43,10 +54,12 @@ $AUTOCONFIG = array(
   "adminlogin"    => "admin",
   "adminpass"     => "Nethesis,1234",
   "directory"     => "/var/www/html/owncloud/data",
-  "default_language" => "it",
+  "default_language" => "en",
 );';
 
 open (FILE, '>/var/www/html/owncloud/config/autoconfig.php');
 print FILE $autoconf;
 close FILE;
 
+# Register owncloud service account in LDAP:
+NethServer::Directory->new()->configServiceAccount('owncloud', NethServer::Directory::FIELDS_READ) || die("Failed to register owncloud service account");
