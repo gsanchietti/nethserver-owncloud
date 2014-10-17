@@ -29,17 +29,12 @@ use esmith::NetworksDB;
 use NethServer::Directory;
 use NethServer::Password;
 
-# sql symlink
-symlink "/var/www/html/owncloud/sql/owncloud.sql",
-    "/etc/e-smith/sql/init/10owncloud.sql";
-
-system ("/sbin/service mysql.init start"); 
-
 my $db = esmith::ConfigDB->open_ro();
 my $domain = $db->get('DomainName')->value;
 my $system = $db->get('SystemName')->value;
 my $url = $system.'.'.$domain;
 my $ip = esmith::NetworksDB->open_ro()->green->prop("ipaddr");
+my $password = NethServer::Password::store('ownuser');
 
 my $autoconf = '
 <?php
@@ -48,7 +43,7 @@ $AUTOCONFIG = array(
   "dbtype"        => "mysql",
   "dbname"        => "owncloud",
   "dbuser"        => "ownuser",
-  "dbpass"        => "ownpass",
+  "dbpass"        => "'.$password.'",
   "dbhost"        => "localhost",
   "dbtableprefix" => "",
   "adminlogin"    => "admin",
@@ -63,3 +58,8 @@ close FILE;
 
 # Register owncloud service account in LDAP:
 NethServer::Directory->new()->configServiceAccount('owncloud', NethServer::Directory::FIELDS_READ) || die("Failed to register owncloud service account");
+
+# initialize grants mysql owncloud database
+system('mysql -e "CREATE DATABASE IF NOT EXISTS owncloud;"');
+system('mysql -e "grant all on owncloud.* to \'ownuser\'@\'localhost\' identified by \''.$password.'\'"');
+system('mysql -e "FLUSH PRIVILEGES"');
