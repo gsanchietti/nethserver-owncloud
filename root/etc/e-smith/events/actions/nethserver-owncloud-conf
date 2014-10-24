@@ -49,7 +49,6 @@ $AUTOCONFIG = array(
   "adminlogin"    => "admin",
   "adminpass"     => "Nethesis,1234",
   "directory"     => "/var/www/html/owncloud/data",
-  "default_language" => "en",
 );';
 
 open (FILE, '>/var/www/html/owncloud/config/autoconfig.php');
