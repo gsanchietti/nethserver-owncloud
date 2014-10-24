@@ -36,24 +36,50 @@ my $url = $system.'.'.$domain;
 my $ip = esmith::NetworksDB->open_ro()->green->prop("ipaddr");
 my $password = NethServer::Password::store('ownuser');
 
-my $autoconf = '
-<?php
-$AUTOCONFIG = array(
-  "trusted_domains" => array("'.$ip.'", "'.$url.'"),
-  "dbtype"        => "mysql",
-  "dbname"        => "owncloud",
-  "dbuser"        => "ownuser",
-  "dbpass"        => "'.$password.'",
-  "dbhost"        => "localhost",
-  "dbtableprefix" => "",
-  "adminlogin"    => "admin",
-  "adminpass"     => "Nethesis,1234",
-  "directory"     => "/var/www/html/owncloud/data",
-);';
+# check if owncloud db tables exists
+my $res = `mysql -e "select count(*) from information_schema.tables where table_type = 'BASE TABLE' and table_schema = 'owncloud'" | tail -n1`;
 
-open (FILE, '>/var/www/html/owncloud/config/autoconfig.php');
-print FILE $autoconf;
-close FILE;
+if ($res == 0) {
+    # clear installation
+    my $autoconf = '
+    <?php
+    $AUTOCONFIG = array(
+      "trusted_domains" => array("'.$ip.'", "'.$url.'"),
+      "dbtype"        => "mysql",
+      "dbname"        => "owncloud",
+      "dbuser"        => "ownuser",
+      "dbpass"        => "'.$password.'",
+      "dbhost"        => "localhost",
+      "dbtableprefix" => "",
+      "adminlogin"    => "admin",
+      "adminpass"     => "Nethesis,1234",
+      "directory"     => "/var/www/html/owncloud/data",
+    );';
+
+    open (FILE, '>/var/www/html/owncloud/config/autoconfig.php');
+    print FILE $autoconf;
+    close FILE;
+
+} else {
+    # upgrade
+    my $filename = '/var/www/html/owncloud/config/config.php';
+    # remove to not generate duplicates
+    system('sed -i "$ d" '.$filename);
+    system('sed -i "/version/d" '.$filename);
+    system('sed -i "/installed/d" '.$filename);
+    system('sed -i "/trusted_domains/d" '.$filename);
+    system('sed -i "/dbpassword/d" '.$filename);
+    system('sed -i "/default_language/d" '.$filename);
+    system('sed -i "/forcessl/d" '.$filename);
+    # add the correct values for version 7
+    system('echo "  \'version\' => \'7.0.2.1\'," >> '.$filename);
+    system('echo "  \'installed\' => true," >> '.$filename);
+    system('echo "  \'dbpassword\' => \''.$password.'\'," >> '.$filename);
+    system('echo "  \'trusted_domains\' => array(\''.$ip.'\', \''.$url.'\')," >> '.$filename);
+    system('echo "  \'default_language\' => \'en\'," >> '.$filename);
+    system('echo "  \'forcessl\' => true," >> '.$filename);
+    system('echo ");" >> '.$filename);
+}
 
 # Register owncloud service account in LDAP:
 NethServer::Directory->new()->configServiceAccount('owncloud', NethServer::Directory::FIELDS_READ) || die("Failed to register owncloud service account");

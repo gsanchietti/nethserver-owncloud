@@ -25,6 +25,8 @@ if [[ $res == '0' ]]; then
     php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapPort "389"
     php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapTLS "1"
     php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapUserFilter "(&(objectClass=person)(givenName=*))"
+    sed -i "/forcessl/d" /var/www/html/owncloud/config/config.php
+    echo "  'forcessl' => true," >> /var/www/html/owncloud/config/config.php
 else
     php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ upgrade
 fi
