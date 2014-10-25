@@ -71,6 +71,7 @@ if ($res == 0) {
     system('sed -i "/dbpassword/d" '.$filename);
     system('sed -i "/default_language/d" '.$filename);
     system('sed -i "/forcessl/d" '.$filename);
+    system('sed -i "/check_for_working_webdav/d" '.$filename);
     # add the correct values for version 7
     system('echo "  \'version\' => \'7.0.2.1\'," >> '.$filename);
     system('echo "  \'installed\' => true," >> '.$filename);
@@ -78,6 +79,7 @@ if ($res == 0) {
     system('echo "  \'trusted_domains\' => array(\''.$ip.'\', \''.$url.'\')," >> '.$filename);
     system('echo "  \'default_language\' => \'en\'," >> '.$filename);
     system('echo "  \'forcessl\' => true," >> '.$filename);
+    system('echo "  \'check_for_working_webdav\' => false," >> '.$filename);
     system('echo ");" >> '.$filename);
 }
 
