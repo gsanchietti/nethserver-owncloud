@@ -34,4 +34,6 @@ if [[ $res == '0' ]]; then
     echo ");" >> /var/www/html/owncloud/config/config.php
 else
     php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ upgrade
+    php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapTLS "0"
+    php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapCacheTTL "0"
 fi
