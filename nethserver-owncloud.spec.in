@@ -45,6 +45,9 @@ echo "%doc COPYING"          >> e-smith-%{version}-filelist
 %defattr(-,root,root)
 
 %changelog
+* Tue Dec 02 2014 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.1.0-1.ns6
+- Upgrade to ownCloud 7 - Enhancement #2669 [NethServer]
+
 * Mon Mar 10 2014 Davide Principi <davide.principi@nethesis.it> - 1.0.2-1.ns6
 - Can't find ownCloud LDAP secret password - Bug #2670 [NethServer]
 
