@@ -1,9 +1,9 @@
 #!/bin/bash
 
-res=`mysql -e "select count(*) from information_schema.tables where table_type = 'BASE TABLE' and table_schema = 'owncloud'" | tail -n1`;
+res=`/usr/bin/mysql -e "select count(*) from information_schema.tables where table_type = 'BASE TABLE' and table_schema = 'owncloud'" | tail -n1`;
 
 if [[ $res == '0' ]]; then
-    url=`config get SystemName`.`config get DomainName`
+    url=`/sbin/e-smith/config get SystemName`.`/sbin/e-smith/config get DomainName`
     curl -s -k https://$url/owncloud/ > /dev/null
     php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ app:enable user_ldap
     php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:create-empty-config
@@ -34,7 +34,7 @@ if [[ $res == '0' ]]; then
     echo ");" >> /var/www/html/owncloud/config/config.php
 else
     # Fix upgrade from version 5.x: https://github.com/owncloud/core/issues/6152#issuecomment-30236917
-    mysql owncloud -e "DELETE FROM lucene_status WHERE fileid IN (SELECT fileid FROM (SELECT fileid FROM lucene_status GROUP BY fileid HAVING count(status) > 1) AS mysqlerr1093hack)";
+    /usr/bin/mysql owncloud -e "DELETE FROM lucene_status WHERE fileid IN (SELECT fileid FROM (SELECT fileid FROM lucene_status GROUP BY fileid HAVING count(status) > 1) AS mysqlerr1093hack)";
     php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ upgrade
     php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapTLS "0"
     php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapCacheTTL "0"
