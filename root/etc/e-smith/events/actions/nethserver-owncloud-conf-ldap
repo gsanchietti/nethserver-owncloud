@@ -39,3 +39,4 @@ else
     php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapTLS "0"
     php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapCacheTTL "0"
 fi
+php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ app:disable updater
