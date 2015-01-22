@@ -46,6 +46,9 @@ echo "%doc COPYING"          >> e-smith-%{version}-filelist
 %defattr(-,root,root)
 
 %changelog
+* Thu Jan 22 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.1.2-1.ns6
+- Update ownCloud to 7.0.4 version - Feature #2986 [NethServer]
+
 * Tue Dec 16 2014 Alessandro Polidori <alessandro.polidori@nethesis.it> - 1.1.1-1.ns6
 - Adapt all mysql commands to use "--defaults-file=/root/.my.cnf" option - Bug #2971 [NethServer]
 - OwnCloud installation from NethServer web interface fails - Bug #2983 [NethServer]
