@@ -1,7 +1,7 @@
 Summary: NethServer Owncloud configuration
 Name: nethserver-owncloud
-Version: @@VERSION@@
-Release: @@RELEASE@@
+Version: 1.1.2
+Release: 1
 License: GPL
 Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
