@@ -1,6 +1,6 @@
 Summary: NethServer Owncloud configuration
 Name: nethserver-owncloud
-Version: 1.1.2
+Version: 1.1.3
 Release: 1
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -10,7 +10,7 @@ URL: %{url_prefix}/%{name}
 BuildRequires: nethserver-devtools
 
 AutoReq: no
-Requires: owncloud >= 7.0.4
+Requires: owncloud >= 7.0.5
 Requires: nethserver-directory
 Requires: php-ldap, php-gd, php-pdo, php-mysql, php-pear, php-pear-MDB2, php-pear-MDB2-Driver-mysqli, php-pear-Net-Curl
 Requires: nethserver-httpd, nethserver-mysql
@@ -46,6 +46,9 @@ echo "%doc COPYING"          >> e-smith-%{version}-filelist
 %defattr(-,root,root)
 
 %changelog
+* Mon Apr 7 2015 Alessandro Polidori <alessandro.polidori@nethesis.it> - 1.1.3-1.ns6
+- Update ownCloud to 7.0.5 version - Feature #3109 [NethServer]
+
 * Thu Jan 22 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.1.2-1.ns6
 - Update ownCloud to 7.0.4 version - Feature #2986 [NethServer]
 

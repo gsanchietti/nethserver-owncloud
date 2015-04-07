@@ -29,8 +29,10 @@ if [[ $res == '0' ]]; then
     sed -i "$ d" /var/www/html/owncloud/config/config.php
     sed -i "/forcessl/d" /var/www/html/owncloud/config/config.php
     sed -i "/check_for_working_webdav/d" /var/www/html/owncloud/config/config.php
+    sed -i "/updatechecker/d" /var/www/html/owncloud/config/config.php
     echo "  'forcessl' => true," >> /var/www/html/owncloud/config/config.php
     echo "  'check_for_working_webdav' => false," >> /var/www/html/owncloud/config/config.php
+    echo "  'updatechecker' => false," >> /var/www/html/owncloud/config/config.php
     echo ");" >> /var/www/html/owncloud/config/config.php
 else
     # Fix upgrade from version 5.x: https://github.com/owncloud/core/issues/6152#issuecomment-30236917
