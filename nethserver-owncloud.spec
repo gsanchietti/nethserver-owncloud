@@ -1,7 +1,7 @@
 Summary: NethServer Owncloud configuration
 Name: nethserver-owncloud
 Version: 1.1.3
-Release: 1
+Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
@@ -46,6 +46,9 @@ echo "%doc COPYING"          >> e-smith-%{version}-filelist
 %defattr(-,root,root)
 
 %changelog
+* Thu Apr 09 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.1.3-1
+- Update ownCloud to 7.0.5 version - Feature #3109 [NethServer]
+
 * Mon Apr 7 2015 Alessandro Polidori <alessandro.polidori@nethesis.it> - 1.1.3-1.ns6
 - Update ownCloud to 7.0.5 version - Feature #3109 [NethServer]
 
