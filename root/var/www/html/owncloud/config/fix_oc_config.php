@@ -3,10 +3,9 @@
 //
 // $argv[1]: filepath of owncloud config file
 // $argv[2]: dbpassword
-// $argv[3] $argv[4]: ip and domain name
+// $argv[3]: list of trusted domains (ip or domain names separated by commas)
 
 $FILEPATH = $argv[1];
-echo $FILEPATH;
 
 if (file_exists($FILEPATH)) {
 
@@ -18,8 +17,8 @@ if (file_exists($FILEPATH)) {
     $CONFIG['dbpassword'] = $argv[2];
     $CONFIG['updatechecker'] = false;
     $CONFIG['check_for_working_webdav'] = false;
-    $array_value = array($argv[3], $argv[4]);
-    $CONFIG['trusted_domains'] = $array_value;
+    $array_values = split(',', $argv[3]);
+    $CONFIG['trusted_domains'] = $array_values;
 
     // output
     $str = var_export($CONFIG, true);

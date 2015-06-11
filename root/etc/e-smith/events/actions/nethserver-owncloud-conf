@@ -62,8 +62,15 @@ if ($res == 0) {
 
 } else {
     # upgrade
+    my $trustedDomains = $ip.','.$url;
+    my $dbTrustedDomains = $db->get_prop('owncloud', 'TrustedDomains') || "";
+
+    if ($dbTrustedDomains ne "") {
+        $trustedDomains = $trustedDomains.','.$dbTrustedDomains;
+    }
+
     my $filename = '/var/www/html/owncloud/config/config.php';
-    exec("/usr/bin/php /var/www/html/owncloud/config/fix_oc_config.php $filename $password $ip $url");
+    system("/usr/bin/php /var/www/html/owncloud/config/fix_oc_config.php $filename $password $trustedDomains");
 }
 
 # Register owncloud service account in LDAP:
