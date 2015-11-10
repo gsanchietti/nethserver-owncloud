@@ -1,6 +1,6 @@
 Summary: NethServer Owncloud configuration
 Name: nethserver-owncloud
-Version: 1.1.6
+Version: 1.1.7
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -46,6 +46,9 @@ echo "%doc COPYING"          >> e-smith-%{version}-filelist
 %defattr(-,root,root)
 
 %changelog
+* Tue Nov 10 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.1.7-1
+- Update to owncloud 7.0.11 - Enhancement #3307 [NethServer]
+
 * Tue Sep 22 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.1.6-1
 - Update to owncloud 7.0.10 - Enhancement #3261 [NethServer]
 
