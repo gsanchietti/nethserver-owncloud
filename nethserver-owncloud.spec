@@ -28,11 +28,7 @@ rm -rf %{buildroot}
 (cd root   ; find . -depth -print | cpio -dump %{buildroot})
 mkdir -p %{buildroot}/var/lib/nethserver/owncloud
 %{genfilelist} \
-	--dir /var/www/html/owncloud/config 'attr(775, apache, apache)' \
-	--dir /var/www/html/owncloud 'attr(750, root, apache)' \
-	--dir /var/www/html/owncloud/apps 'attr(770, apache, apache)' \
-	--dir /var/www/html/owncloud/apps/user_ldap 'attr(750, root, apache)' \
-	--dir /var/www/html/owncloud/apps/user_ldap/command 'attr(750, root, apache)' \
+	--dir /var/lib/nethserver/owncloud 'attr(775, apache, apache)' \
     %{buildroot} > %{version}-%{release}-filelist
 
 %files -f %{version}-%{release}-filelist
