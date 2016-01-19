@@ -1,6 +1,6 @@
 Summary: NethServer Owncloud configuration
 Name: nethserver-owncloud
-Version: 1.1.3
+Version: 1.1.7
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
@@ -41,6 +41,21 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue Nov 10 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.1.7-1
+- Update to owncloud 7.0.11 - Enhancement #3307 [NethServer]
+
+* Tue Sep 22 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.1.6-1
+- Update to owncloud 7.0.10 - Enhancement #3261 [NethServer]
+
+* Wed Sep 09 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.1.5-1
+- Update to owncloud 7.0.8 - Enhancement #3252 [NethServer]
+
+* Tue Jun 30 2015 Alessandro Polidori <alessandro.polidori@gmail.com> - 1.1.4-1
+- Wrong email field on LDAP configuration - Bug #3205 [NethServer]
+- Update ownCloud to 7.0.6 version - Feature #3191 [NethServer]
+- OwnCloud trusted domains - Enhancement #3022 [NethServer]
+- OwnCloud update event dirties configuration file - Bug #3021 [NethServer]
+
 * Thu Apr 09 2015 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.1.3-1
 - Update ownCloud to 7.0.5 version - Feature #3109 [NethServer]
 
