@@ -1,15 +1,20 @@
 #!/bin/bash
 
-OCC="php /usr/share/owncloud/occ"
-CONFIG_FILE="/etc/owncloud/config.php"
+CONFIG_FILE="/var/www/html/owncloud/config/config.php"
+
+function OCC
+{
+    params=$@;
+    runuser -s /bin/bash apache -c "php /var/www/html/owncloud/occ $params"
+}
 
 res=`/usr/bin/mysql --defaults-file=/root/.my.cnf -e "select count(*) from information_schema.tables where table_type = 'BASE TABLE' and table_schema = 'owncloud'" | tail -n1`;
 
 if [[ $res == '0' ]]; then
     url=`/sbin/e-smith/config get SystemName`.`/sbin/e-smith/config get DomainName`
-    curl -s -k https://$url/owncloud/ > /dev/null
-    $OCC app:enable user_ldap
-    $OCC ldap:create-empty-config
+    curl -s -k https://$url/owncloud/index.php > /dev/null
+    OCC "app:enable user_ldap"
+    OCC "ldap:create-empty-config"
     sed -i "$ d" $CONFIG_FILE
     sed -i "/forcessl/d" $CONFIG_FILE
     sed -i "/check_for_working_webdav/d" $CONFIG_FILE
@@ -20,23 +25,22 @@ if [[ $res == '0' ]]; then
     echo ");" >> $CONFIG_FILE
 fi
 
-$OCC ldap:set-config "" ldapAgentPassword `cat /var/lib/nethserver/secrets/owncloud`
-$OCC ldap:set-config "" ldapBackupPort "389"
-$OCC ldap:set-config "" ldapBase "dc=directory,dc=nh"
-$OCC ldap:set-config "" ldapBaseGroups "dc=directory,dc=nh"
-$OCC ldap:set-config "" ldapBaseUsers "dc=directory,dc=nh"
-$OCC ldap:set-config "" ldapConfigurationActive "1"
-$OCC ldap:set-config "" ldapUserDisplayName "cn"
-$OCC ldap:set-config "" ldapAgentName "cn=owncloud,dc=directory,dc=nh"
-$OCC ldap:set-config "" ldapEmailAttribute "mail"
-$OCC ldap:set-config "" ldapExpertUsernameAttr "uid"
-$OCC ldap:set-config "" ldapGroupDisplayName "cn"
-$OCC ldap:set-config "" ldapGroupFilter "(&(objectClass=posixGroup)(memberUid=*))"
-$OCC ldap:set-config "" ldapGroupMemberAssocAttr "memberUid"
-$OCC ldap:set-config "" ldapHost "localhost:389"
-$OCC ldap:set-config "" ldapLoginFilter "uid=%uid"
-$OCC ldap:set-config "" ldapPort "389"
-$OCC ldap:set-config "" ldapTLS "0"
-$OCC ldap:set-config "" ldapCacheTTL "0"
-$OCC ldap:set-config "" ldapUserFilter "(&(objectClass=person)(givenName=*))"
-$OCC app:disable updater
+OCC "ldap:set-config '' ldapAgentPassword `cat /var/lib/nethserver/secrets/owncloud`"
+OCC "ldap:set-config '' ldapBackupPort '389'"
+OCC "ldap:set-config '' ldapBase 'dc=directory,dc=nh'"
+OCC "ldap:set-config '' ldapBaseGroups 'dc=directory,dc=nh'"
+OCC "ldap:set-config '' ldapBaseUsers 'dc=directory,dc=nh'"
+OCC "ldap:set-config '' ldapConfigurationActive '1'"
+OCC "ldap:set-config '' ldapUserDisplayName 'cn'"
+OCC "ldap:set-config '' ldapAgentName 'cn=owncloud,dc=directory,dc=nh'"
+OCC "ldap:set-config '' ldapEmailAttribute 'mail'"
+OCC "ldap:set-config '' ldapExpertUsernameAttr 'uid'"
+OCC "ldap:set-config '' ldapGroupDisplayName 'cn'"
+OCC "ldap:set-config '' ldapGroupFilter '(&(objectClass=posixGroup)(memberUid=*))'"
+OCC "ldap:set-config '' ldapGroupMemberAssocAttr 'memberUid'"
+OCC "ldap:set-config '' ldapHost 'localhost:389'"
+OCC "ldap:set-config '' ldapLoginFilter 'uid=%uid'"
+OCC "ldap:set-config '' ldapPort '389'"
+OCC "ldap:set-config '' ldapTLS '0'"
+OCC "ldap:set-config '' ldapCacheTTL '0'"
+OCC "ldap:set-config '' ldapUserFilter '(&(objectClass=person)(givenName=*))'"
