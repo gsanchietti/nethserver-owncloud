@@ -53,10 +53,10 @@ if ($res == 0) {
       "dbtableprefix" => "",
       "adminlogin"    => "admin",
       "adminpass"     => "Nethesis,1234",
-      "directory"     => "/var/www/html/owncloud/data",
+      "directory"     => "/var/lib/nethserver/owncloud",
     );';
 
-    open (FILE, '>/var/www/html/owncloud/config/autoconfig.php');
+    open (FILE, '>/etc/owncloud/autoconfig.php');
     print FILE $autoconf;
     close FILE;
 
@@ -69,8 +69,8 @@ if ($res == 0) {
         $trustedDomains = $trustedDomains.','.$dbTrustedDomains;
     }
 
-    my $filename = '/var/www/html/owncloud/config/config.php';
-    system("/usr/bin/php /var/www/html/owncloud/config/fix_oc_config.php $filename $password $trustedDomains");
+    my $filename = '/etc/owncloud/config.php';
+    system("/usr/bin/php /usr/share/owncloud/nethserver/fix_oc_config.php $filename $password $trustedDomains");
 }
 
 # Register owncloud service account in LDAP:

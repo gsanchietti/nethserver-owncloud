@@ -1,45 +1,42 @@
 #!/bin/bash
 
+OCC="php /usr/share/owncloud/occ"
+CONFIG_FILE="/etc/owncloud/config.php"
+
 res=`/usr/bin/mysql --defaults-file=/root/.my.cnf -e "select count(*) from information_schema.tables where table_type = 'BASE TABLE' and table_schema = 'owncloud'" | tail -n1`;
 
 if [[ $res == '0' ]]; then
     url=`/sbin/e-smith/config get SystemName`.`/sbin/e-smith/config get DomainName`
     curl -s -k https://$url/owncloud/ > /dev/null
-    php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ app:enable user_ldap
-    php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:create-empty-config
-    sed -i "$ d" /var/www/html/owncloud/config/config.php
-    sed -i "/forcessl/d" /var/www/html/owncloud/config/config.php
-    sed -i "/check_for_working_webdav/d" /var/www/html/owncloud/config/config.php
-    sed -i "/updatechecker/d" /var/www/html/owncloud/config/config.php
-    echo "  'forcessl' => true," >> /var/www/html/owncloud/config/config.php
-    echo "  'check_for_working_webdav' => false," >> /var/www/html/owncloud/config/config.php
-    echo "  'updatechecker' => false," >> /var/www/html/owncloud/config/config.php
-    echo ");" >> /var/www/html/owncloud/config/config.php
-else
-    # Fix upgrade from version 5.x: https://github.com/owncloud/core/issues/6152#issuecomment-30236917
-    /usr/bin/mysql --defaults-file=/root/.my.cnf owncloud -e "DELETE FROM lucene_status WHERE fileid IN (SELECT fileid FROM (SELECT fileid FROM lucene_status GROUP BY fileid HAVING count(status) > 1) AS mysqlerr1093hack)";
-    php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ upgrade
-    php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapTLS "0"
-    php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapCacheTTL "0"
+    $OCC app:enable user_ldap
+    $OCC ldap:create-empty-config
+    sed -i "$ d" $CONFIG_FILE
+    sed -i "/forcessl/d" $CONFIG_FILE
+    sed -i "/check_for_working_webdav/d" $CONFIG_FILE
+    sed -i "/updatechecker/d" $CONFIG_FILE
+    echo "  'forcessl' => true," >> $CONFIG_FILE
+    echo "  'check_for_working_webdav' => false," >> $CONFIG_FILE
+    echo "  'updatechecker' => false," >> $CONFIG_FILE
+    echo ");" >> $CONFIG_FILE
 fi
 
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapAgentPassword `cat /var/lib/nethserver/secrets/owncloud`
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapBackupPort "389"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapBase "dc=directory,dc=nh"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapBaseGroups "dc=directory,dc=nh"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapBaseUsers "dc=directory,dc=nh"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapConfigurationActive "1"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapUserDisplayName "cn"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapAgentName "cn=owncloud,dc=directory,dc=nh"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapEmailAttribute "mail"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapExpertUsernameAttr "uid"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapGroupDisplayName "cn"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapGroupFilter "(&(objectClass=posixGroup)(memberUid=*))"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapGroupMemberAssocAttr "memberUid"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapHost "localhost:389"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapLoginFilter "uid=%uid"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapPort "389"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapTLS "0"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapCacheTTL "0"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ ldap:set-config "" ldapUserFilter "(&(objectClass=person)(givenName=*))"
-php -d "magic_quotes_gpc = Off" /var/www/html/owncloud/occ app:disable updater
+$OCC ldap:set-config "" ldapAgentPassword `cat /var/lib/nethserver/secrets/owncloud`
+$OCC ldap:set-config "" ldapBackupPort "389"
+$OCC ldap:set-config "" ldapBase "dc=directory,dc=nh"
+$OCC ldap:set-config "" ldapBaseGroups "dc=directory,dc=nh"
+$OCC ldap:set-config "" ldapBaseUsers "dc=directory,dc=nh"
+$OCC ldap:set-config "" ldapConfigurationActive "1"
+$OCC ldap:set-config "" ldapUserDisplayName "cn"
+$OCC ldap:set-config "" ldapAgentName "cn=owncloud,dc=directory,dc=nh"
+$OCC ldap:set-config "" ldapEmailAttribute "mail"
+$OCC ldap:set-config "" ldapExpertUsernameAttr "uid"
+$OCC ldap:set-config "" ldapGroupDisplayName "cn"
+$OCC ldap:set-config "" ldapGroupFilter "(&(objectClass=posixGroup)(memberUid=*))"
+$OCC ldap:set-config "" ldapGroupMemberAssocAttr "memberUid"
+$OCC ldap:set-config "" ldapHost "localhost:389"
+$OCC ldap:set-config "" ldapLoginFilter "uid=%uid"
+$OCC ldap:set-config "" ldapPort "389"
+$OCC ldap:set-config "" ldapTLS "0"
+$OCC ldap:set-config "" ldapCacheTTL "0"
+$OCC ldap:set-config "" ldapUserFilter "(&(objectClass=person)(givenName=*))"
+$OCC app:disable updater
