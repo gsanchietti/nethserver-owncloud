@@ -32,7 +32,6 @@ event_actions("nethserver-owncloud-update", qw(
 
 event_templates("nethserver-owncloud-update", qw(
   /etc/httpd/conf/httpd.conf
-  /var/www/html/owncloud/apps/user_ldap/appinfo/register_command.php
 ));
 
 event_services("nethserver-owncloud-update", qw(
