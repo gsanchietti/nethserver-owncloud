@@ -5,7 +5,8 @@ CONFIG_FILE="/var/www/html/owncloud/config/config.php"
 function OCC
 {
     params=$@;
-    runuser -s /bin/bash apache -c "php /var/www/html/owncloud/occ $params"
+    cd /var/www/html/owncloud/
+    runuser -s /bin/bash apache -c "./occ $params"
 }
 
 res=`/usr/bin/mysql --defaults-file=/root/.my.cnf -e "select count(*) from information_schema.tables where table_type = 'BASE TABLE' and table_schema = 'owncloud'" | tail -n1`;
