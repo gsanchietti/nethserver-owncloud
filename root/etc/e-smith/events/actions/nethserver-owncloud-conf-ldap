@@ -12,6 +12,9 @@ res=`/usr/bin/mysql --defaults-file=/root/.my.cnf -e "select count(*) from infor
 
 if [[ $res == '0' ]]; then
     url=`/sbin/e-smith/config get SystemName`.`/sbin/e-smith/config get DomainName`
+    password=`perl -e "use NethServer::Password; print NethServer::Password::store('ownuser');"`
+    OCC "maintenance:install  --database mysql --database-name owncloud --database-pass $password --database-user ownuser --admin-user admin  --admin-pass Nethesis,1234 --data-dir /var/lib/nethserver/owncloud/"
+
     curl -s -k https://$url/owncloud/index.php > /dev/null
     OCC "app:enable user_ldap"
     OCC "ldap:create-empty-config"

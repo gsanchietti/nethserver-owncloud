@@ -56,21 +56,9 @@ if ($res == 0) {
       "directory"     => "/var/lib/nethserver/owncloud",
     );';
 
-    open (FILE, '>/etc/owncloud/autoconfig.php');
+    open (FILE, '>/var/www/html/owncloud/config/autoconfig.php');
     print FILE $autoconf;
     close FILE;
-
-} else {
-    # upgrade
-    my $trustedDomains = $ip.','.$url;
-    my $dbTrustedDomains = $db->get_prop('owncloud', 'TrustedDomains') || "";
-
-    if ($dbTrustedDomains ne "") {
-        $trustedDomains = $trustedDomains.','.$dbTrustedDomains;
-    }
-
-    my $filename = '/etc/owncloud/config.php';
-    system("/usr/bin/php /usr/share/owncloud/nethserver/fix_oc_config.php $filename $password $trustedDomains");
 }
 
 # Register owncloud service account in LDAP:
