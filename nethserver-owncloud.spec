@@ -9,7 +9,7 @@ URL: %{url_prefix}/%{name}
 
 BuildRequires: nethserver-devtools
 
-Requires: owncloud
+Requires: owncloud = 8.2.2-1.1
 Requires: nethserver-directory
 Requires: php-ldap, php-gd, php-pdo, php-mysql, php-pear, php-pear-MDB2, php-pear-MDB2-Driver-mysqli, php-pear-Net-Curl
 Requires: nethserver-httpd, nethserver-mysql
