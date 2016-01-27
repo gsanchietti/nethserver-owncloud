@@ -1,70 +1,62 @@
-#!/usr/bin/perl
-#
-# Copyright (C) 2012 Nethesis S.r.l.
-# http://www.nethesis.it - support@nethesis.it
-# 
-# This script is part of NethServer.
-# 
-# NethServer is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License,
-# or any later version.
-# 
-# NethServer is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License
-# along with NethServer.  If not, see <http://www.gnu.org/licenses/>.
-#
+#!/bin/bash
 
-use strict;
-package esmith;
+CONFIG_FILE="/var/www/html/owncloud/config/config.php"
 
-use Errno;
-use esmith::util;
-use esmith::ConfigDB;
-use esmith::NetworksDB;
-use NethServer::Directory;
-use NethServer::Password;
-
-my $db = esmith::ConfigDB->open_ro();
-my $domain = $db->get('DomainName')->value;
-my $system = $db->get('SystemName')->value;
-my $url = $system.'.'.$domain;
-my $ip = esmith::NetworksDB->open_ro()->green->prop("ipaddr");
-my $password = NethServer::Password::store('ownuser');
-
-# check if owncloud db tables exists
-my $res = `/usr/bin/mysql --defaults-file=/root/.my.cnf -e "select count(*) from information_schema.tables where table_type = 'BASE TABLE' and table_schema = 'owncloud'" | tail -n1`;
-
-if ($res == 0) {
-    # clear installation
-    my $autoconf = '
-    <?php
-    $AUTOCONFIG = array(
-      "trusted_domains" => array("'.$ip.'", "'.$url.'"),
-      "dbtype"        => "mysql",
-      "dbname"        => "owncloud",
-      "dbuser"        => "ownuser",
-      "dbpass"        => "'.$password.'",
-      "dbhost"        => "localhost",
-      "dbtableprefix" => "",
-      "adminlogin"    => "admin",
-      "adminpass"     => "Nethesis,1234",
-      "directory"     => "/var/lib/nethserver/owncloud",
-    );';
-
-    open (FILE, '>/var/www/html/owncloud/config/autoconfig.php');
-    print FILE $autoconf;
-    close FILE;
+function OCC
+{
+    params=$@;
+    cd /var/www/html/owncloud/
+    runuser -s /bin/bash apache -c "./occ $params"
 }
 
 # Register owncloud service account in LDAP:
-NethServer::Directory->new()->configServiceAccount('owncloud', NethServer::Directory::FIELDS_READ) || die("Failed to register owncloud service account");
+perl -e "use NethServer::Directory; NethServer::Directory->new()->configServiceAccount('owncloud', NethServer::Directory::FIELDS_READ) || die('Failed to register owncloud service account');"
 
 # initialize grants mysql owncloud database
-system('/usr/bin/mysql --defaults-file=/root/.my.cnf -e "CREATE DATABASE IF NOT EXISTS owncloud;"');
-system('/usr/bin/mysql --defaults-file=/root/.my.cnf -e "grant all on owncloud.* to \'ownuser\'@\'localhost\' identified by \''.$password.'\'"');
-system('/usr/bin/mysql --defaults-file=/root/.my.cnf -e "FLUSH PRIVILEGES"');
+/usr/bin/mysql --defaults-file=/root/.my.cnf -e "CREATE DATABASE IF NOT EXISTS owncloud;"
+/usr/bin/mysql --defaults-file=/root/.my.cnf -e "grant all on owncloud.* to \'ownuser\'@\'localhost\' identified by \''.$password.'\'"
+/usr/bin/mysql --defaults-file=/root/.my.cnf -e "FLUSH PRIVILEGES"
+
+
+res=`/usr/bin/mysql --defaults-file=/root/.my.cnf -e "select count(*) from information_schema.tables where table_type = 'BASE TABLE' and table_schema = 'owncloud'" | tail -n1`;
+
+if [[ $res == '0' ]]; then
+    password=`perl -e "use NethServer::Password; print NethServer::Password::store('ownuser');"`
+    OCC "maintenance:install  --database mysql --database-name owncloud --database-pass $password --database-user ownuser --admin-user admin  --admin-pass Nethesis,1234 --data-dir /var/lib/nethserver/owncloud/"
+
+    curl -s -k https://$url/owncloud/index.php > /dev/null
+    OCC "app:enable user_ldap"
+    OCC "ldap:create-empty-config"
+    sed -i "$ d" $CONFIG_FILE
+    sed -i "/forcessl/d" $CONFIG_FILE
+    sed -i "/check_for_working_webdav/d" $CONFIG_FILE
+    sed -i "/updatechecker/d" $CONFIG_FILE
+    echo "  'forcessl' => true," >> $CONFIG_FILE
+    echo "  'check_for_working_webdav' => false," >> $CONFIG_FILE
+    echo "  'updatechecker' => false," >> $CONFIG_FILE
+    echo ");" >> $CONFIG_FILE
+
+    ip=`perl -e 'use esmith::NetworksDB; print esmith::NetworksDB->open_ro()->green->prop("ipaddr");'`
+    fqdn=`/sbin/e-smith/config get SystemName`.`/sbin/e-smith/config get DomainName`
+    php /usr/share/owncloud/nethserver/fix_oc_config.php $CONFIG_FILE $ip,$fqdn
+fi
+
+OCC "ldap:set-config '' ldapAgentPassword `cat /var/lib/nethserver/secrets/owncloud`"
+OCC "ldap:set-config '' ldapBackupPort '389'"
+OCC "ldap:set-config '' ldapBase 'dc=directory,dc=nh'"
+OCC "ldap:set-config '' ldapBaseGroups 'dc=directory,dc=nh'"
+OCC "ldap:set-config '' ldapBaseUsers 'dc=directory,dc=nh'"
+OCC "ldap:set-config '' ldapConfigurationActive '1'"
+OCC "ldap:set-config '' ldapUserDisplayName 'cn'"
+OCC "ldap:set-config '' ldapAgentName 'cn=owncloud,dc=directory,dc=nh'"
+OCC "ldap:set-config '' ldapEmailAttribute 'mail'"
+OCC "ldap:set-config '' ldapExpertUsernameAttr 'uid'"
+OCC "ldap:set-config '' ldapGroupDisplayName 'cn'"
+OCC "ldap:set-config '' ldapGroupFilter '(&(objectClass=posixGroup)(memberUid=*))'"
+OCC "ldap:set-config '' ldapGroupMemberAssocAttr 'memberUid'"
+OCC "ldap:set-config '' ldapHost 'localhost:389'"
+OCC "ldap:set-config '' ldapLoginFilter 'uid=%uid'"
+OCC "ldap:set-config '' ldapPort '389'"
+OCC "ldap:set-config '' ldapTLS '0'"
+OCC "ldap:set-config '' ldapCacheTTL '0'"
+OCC "ldap:set-config '' ldapUserFilter '(&(objectClass=person)(givenName=*))'"
