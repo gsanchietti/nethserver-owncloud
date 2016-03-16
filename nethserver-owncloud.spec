@@ -10,7 +10,7 @@ URL: %{url_prefix}/%{name}
 BuildRequires: nethserver-devtools
 
 AutoReq: no
-Requires: owncloud >= 7.0.11
+Requires: owncloud >= 7.0.13
 Requires: nethserver-directory
 Requires: php-ldap, php-gd, php-pdo, php-mysql, php-pear, php-pear-MDB2, php-pear-MDB2-Driver-mysqli, php-pear-Net-Curl
 Requires: nethserver-httpd, nethserver-mysql
