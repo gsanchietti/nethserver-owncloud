@@ -9,9 +9,6 @@ function OCC
     runuser -s /bin/bash apache -c "./occ $params"
 }
 
-# Register owncloud service account in LDAP:
-perl -e "use NethServer::Directory; NethServer::Directory->new()->configServiceAccount('owncloud', NethServer::Directory::FIELDS_READ) || die('Failed to register owncloud service account');"
-
 password=`perl -e "use NethServer::Password; print NethServer::Password::store('ownuser');"`
 
 # initialize grants mysql owncloud database
@@ -26,8 +23,6 @@ if [[ $res == '0' ]]; then
     OCC "maintenance:install  --database mysql --database-name owncloud --database-pass $password --database-user ownuser --admin-user admin  --admin-pass Nethesis,1234 --data-dir /var/lib/nethserver/owncloud/"
 
     curl -s -k https://$url/owncloud/index.php > /dev/null
-    OCC "app:enable user_ldap"
-    OCC "ldap:create-empty-config"
     sed -i "$ d" $CONFIG_FILE
     sed -i "/forcessl/d" $CONFIG_FILE
     sed -i "/check_for_working_webdav/d" $CONFIG_FILE
@@ -42,22 +37,3 @@ if [[ $res == '0' ]]; then
     php /usr/share/owncloud/nethserver/fix_oc_config.php $CONFIG_FILE $ip,$fqdn
 fi
 
-OCC "ldap:set-config '' ldapAgentPassword `cat /var/lib/nethserver/secrets/owncloud`"
-OCC "ldap:set-config '' ldapBackupPort '389'"
-OCC "ldap:set-config '' ldapBase 'dc=directory,dc=nh'"
-OCC "ldap:set-config '' ldapBaseGroups 'dc=directory,dc=nh'"
-OCC "ldap:set-config '' ldapBaseUsers 'dc=directory,dc=nh'"
-OCC "ldap:set-config '' ldapConfigurationActive '1'"
-OCC "ldap:set-config '' ldapUserDisplayName 'cn'"
-OCC "ldap:set-config '' ldapAgentName 'cn=owncloud,dc=directory,dc=nh'"
-OCC "ldap:set-config '' ldapEmailAttribute 'mail'"
-OCC "ldap:set-config '' ldapExpertUsernameAttr 'uid'"
-OCC "ldap:set-config '' ldapGroupDisplayName 'cn'"
-OCC "ldap:set-config '' ldapGroupFilter '(&(objectClass=posixGroup)(memberUid=*))'"
-OCC "ldap:set-config '' ldapGroupMemberAssocAttr 'memberUid'"
-OCC "ldap:set-config '' ldapHost 'localhost:389'"
-OCC "ldap:set-config '' ldapLoginFilter 'uid=%uid'"
-OCC "ldap:set-config '' ldapPort '389'"
-OCC "ldap:set-config '' ldapTLS '0'"
-OCC "ldap:set-config '' ldapCacheTTL '0'"
-OCC "ldap:set-config '' ldapUserFilter '(&(objectClass=person)(givenName=*))'"
