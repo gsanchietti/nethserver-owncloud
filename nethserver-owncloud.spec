@@ -1,24 +1,46 @@
+%define owncloud_version 9.0.2
+
+%define apache_serverroot       /var/www/html
+%define apache_confdir /etc/httpd/conf.d
+%define oc_dir  %{apache_serverroot}/owncloud
+%define oc_config_dir   %{oc_dir}/config
+%define oc_data_dir     %{oc_dir}/data
+%define oc_data_pdir    %{oc_dir}
+
+%define oc_user apache
+%define oc_group apache
+
+
 Summary: NethServer Owncloud configuration
 Name: nethserver-owncloud
-Version: 1.1.7
+Version: %owncloud_version
 Release: 1%{?dist}
 License: GPL
 Source: %{name}-%{version}.tar.gz
+Source1: https://download.owncloud.org/community/owncloud-%{owncloud_version}.tar.bz2
+Source2: owncloud.conf
+Source3: disable-updatechecker.config.php
 BuildArch: noarch
 URL: %{url_prefix}/%{name}
 
 BuildRequires: nethserver-devtools
 
-Requires: owncloud = 8.2.2-1.1
-Requires: nethserver-directory
 Requires: php-ldap, php-gd, php-pdo, php-mysql, php-pear, php-pear-MDB2, php-pear-MDB2-Driver-mysqli, php-pear-Net-Curl
 Requires: nethserver-httpd, nethserver-mysql
 
 %description
-NethServer Owncloud configuration
+NethServer Owncloud files and configuration.
+
+This package installs as follows:
+oc_dir:        %{oc_dir}
+oc_data_dir:   %{oc_data_dir}
+oc_config_dir: %{oc_config_dir}
+
 
 %prep
 %setup
+cp %{SOURCE1} .
+
 
 %build
 perl createlinks
@@ -27,15 +49,53 @@ perl createlinks
 rm -rf %{buildroot}
 (cd root   ; find . -depth -print | cpio -dump %{buildroot})
 mkdir -p %{buildroot}/var/lib/nethserver/owncloud
-%{genfilelist} \
-	--dir /var/lib/nethserver/owncloud 'attr(775, apache, apache)' \
-    %{buildroot} > %{version}-%{release}-filelist
+mkdir -p %{buildroot}/var/www/html
+tar xf %{SOURCE1} -C %{buildroot}/var/www/html
 
-%files -f %{version}-%{release}-filelist
-%defattr(-,root,root)
+idir=%{buildroot}/%{oc_dir}
+mkdir -p %{buildroot}/%{oc_dir}
+mkdir -p %{buildroot}/%{oc_dir}/etc
+mkdir -p %{buildroot}/%{oc_data_dir}
+mkdir -p %{buildroot}/%{oc_config_dir}
+mkdir -p %{buildroot}/%{oc_dir}/core/skeleton
+
+mkdir -p %{buildroot}/etc/httpd/conf.d
+cp %{SOURCE2} %{buildroot}/etc/httpd/conf.d
+
+## https://github.com/owncloud/core/issues/22257
+# disable-updatechecker.config.php
+cp %{SOURCE3} $idir/config/
+
+
+
+%files 
+%defattr(0644,root,root,0755)
 %doc COPYING
 %dir %{_nseventsdir}/%{name}-update
-/var/lib/nethserver/owncloud
+# is there any security to be gained here? Easier to chown everthing to % {oc_user}
+%attr(0755,%{oc_user},%{oc_group})/%{oc_dir}/occ
+%attr(0775,%{oc_user},%{oc_group}) %{oc_dir}/apps
+%attr(0775,%{oc_user},%{oc_group}) %{oc_data_dir}
+%attr(0775,%{oc_user},%{oc_group}) %{oc_config_dir}
+# BUMMER: exclude excludes globally, not just below. It cannot be used to avoid duplicate warnings?
+# FIXME: only cure against the duplicate warnings is a -f file-list
+/etc/backup-data.d/owncloud.include
+/etc/e-smith/db/configuration/defaults/owncloud/TrustedDomains
+/etc/e-smith/db/configuration/defaults/owncloud/type
+/etc/e-smith/events/actions/nethserver-owncloud-conf
+/etc/e-smith/events/nethserver-owncloud-update/S00initialize-default-databases
+/etc/e-smith/events/nethserver-owncloud-update/S20nethserver-owncloud-conf
+/etc/e-smith/events/nethserver-owncloud-update/services2adjust/httpd
+/etc/e-smith/events/nethserver-owncloud-update/templates2expand/etc/httpd/conf.d/nethserver.conf
+/etc/e-smith/templates/httpd/vhost-default/40owncloud
+/etc/httpd/conf.d/owncloud.conf
+/usr/share/nethesis/NethServer/Module/Dashboard/Applications/ownCloud.php
+/usr/share/owncloud/nethserver/fix_oc_config.php
+
+%defattr(0644,root,%{oc_group},0755)
+%dir /var/lib/nethserver/owncloud
+%{oc_dir}
+
 
 
 %changelog
